@@ -1,0 +1,39 @@
+<idea-plugin>
+    <id>com.fun90.idea.patcher</id>
+    <name>WindchillPatcherX</name>
+    <vendor email="2797696520@qq.com" url="">CV666</vendor>
+
+    <description><![CDATA[
+    适用于windchill开发的一款文件导出插件
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+<!--    <depends>com.intellij.modules.platform</depends>-->
+
+    <depends>com.intellij.modules.vcs</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceImplementation="com.fun90.idea.patcher.PatcherConfig"/>
+    </extensions>
+
+    <actions>
+        <group id="com.fun90.idea.patcher" text="PatcherX" popup="true" icon="AllIcons.Nodes.Parameter">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="Vcs.RepositoryChangesBrowserMenu" anchor="first"/>
+            <!--            <add-to-group group-id="Vcs.Log.ChangesBrowser" anchor="first"/>-->
+            <add-to-group group-id="Vcs.RepositoryChangesBrowserToolbar" anchor="first"/>
+            <add-to-group group-id="VersionControlsGroup" anchor="first"/>
+            <action id="com.fun90.idea.patcher.CvsChangeListAction" class="com.fun90.idea.patcher.CvsChangeListAction" text="Copy Change List"/>
+            <action id="com.fun90.idea.patcher.ExportPatcherAction" class="com.fun90.idea.patcher.ExportPatcherAction" text="Export Patcher"/>
+        </group>
+
+
+        <!--<action id="com.sks.ClassesExportAction" class="ClassesExportAction" text="Export _Class">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </action>-->
+    </actions>
+</idea-plugin>
