@@ -20,6 +20,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -144,11 +145,7 @@ public class PatcherDialog extends JDialog {
         }
         ListModel<VirtualFile> selectFileAll = fileList.getModel();
 
-        // 如果选择的是文件夹，那么默认导出所有文件
-        DefaultListModel<VirtualFile> selectedFiles = new DefaultListModel<>();
-        for (int i = 0; i < selectFileAll.getSize(); i++) {
-            findSelectFiles(selectFileAll.getElementAt(i) , selectedFiles);
-        }
+        DefaultListModel<VirtualFile> selectedFiles = filterFile(selectFileAll); // 通过导出规则过滤选择的文件
 
         PathResult result = PatcherUtil.getPathResult(module, selectedFiles, exportPath, compileContext);
         // 删除原有文件
@@ -176,6 +173,45 @@ public class PatcherDialog extends JDialog {
             message.append(" <b>is not exported!</b><br><b>Please make sure web path is right and these files are not tests.</b>");
         }
         PatcherUtil.showInfo(message.toString(), event.getProject());
+    }
+
+    private DefaultListModel<VirtualFile> filterFile(ListModel<VirtualFile> selectFileAll) {
+        DefaultListModel<VirtualFile> defaultListModel = filterDirectory(selectFileAll);
+
+        // 如果选择的是文件夹，那么默认导出所有文件
+        DefaultListModel<VirtualFile> selectedFiles = new DefaultListModel<>();
+        for (int i = 0; i < defaultListModel.getSize(); i++) {
+            findSelectFiles(defaultListModel.getElementAt(i) , selectedFiles);
+        }
+
+        return selectedFiles;
+    }
+
+    private DefaultListModel<VirtualFile> filterDirectory(ListModel<VirtualFile> selectFileAll) {
+        Map<String, VirtualFile> directory = new HashMap<>(); // 记录所有文件夹
+        DefaultListModel<VirtualFile> files = new DefaultListModel<>();
+        for (int i = 0; i < selectFileAll.getSize(); i++) { // 先记录下文件夹和对应选择的文件。克隆一份选择的文件
+            VirtualFile virtualFile = selectFileAll.getElementAt(i);
+            if (virtualFile.isDirectory()) {
+                directory.put(virtualFile.getPath(), virtualFile); // 记录文件夹
+            }
+            files.addElement(virtualFile); // 选择
+        }
+
+        for (int i = 0; i < selectFileAll.getSize(); i++) { // 过滤掉选择过文件的文件夹，把文件夹删除
+            VirtualFile elementAt = selectFileAll.getElementAt(i);
+            String path = elementAt.getPath();  // 选择了子文件夹一样过滤
+            for (String s : directory.keySet()) {
+                if (path.contains(s) && (!path.equals(s))) { // 不要把自己都过滤了
+                    VirtualFile virtualFile = directory.get(s);
+                    if (files.contains(virtualFile)) {
+                        files.removeElement(virtualFile);
+                    }
+                }
+            }
+        }
+
+        return files;
     }
 
     /**
