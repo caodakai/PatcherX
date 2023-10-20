@@ -156,21 +156,21 @@ public class PatcherDialog extends JDialog {
         result.getFromTo().forEach(FilesUtil::copy);
         // 提示信息
         StringBuilder message = new StringBuilder();
-        int notExportSize = result.getUnsettledList().size();
-        int fileCount = selectedFiles.getSize() - notExportSize;
+        int notExportSize = result.getUnsettledList().size(); // 过滤了的文件数量
+        int fileCount = result.getFromTo().size(); // 实际导出的文件数量
         message.append("Export ").append(fileCount).append(" files. ");
         if (fileCount != 0) {
             message.append("(<a href=\"file://").append(exportPath).append("\" target=\"blank\">open</a>)<br>");
         }
         if (notExportSize > 0) {
-            message.append("<b>Warning:</b>");
+            message.append("<b>Warning:</b><br/>");
             for (int i = 0; i < notExportSize; i++) {
                 message.append(result.getUnsettledList().get(i));
                 if (i < notExportSize - 1) {
-                    message.append(",<br>");
+                    message.append(",<br/>");
                 }
             }
-            message.append(" <b>is not exported!</b><br><b>Please make sure web path is right and these files are not tests.</b>");
+//            message.append("<b>is not exported!</b>");
         }
         PatcherUtil.showInfo(message.toString(), event.getProject());
     }

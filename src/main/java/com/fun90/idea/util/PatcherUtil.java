@@ -25,6 +25,8 @@ public class PatcherUtil {
             NotificationDisplayType.BALLOON, true);
     private static final Pattern webPathPattern = Pattern.compile("(.+)/(webapp|WebRoot)/(.+)");
 
+    private static final Set<String> filterCompileFiles = new HashSet<>(Arrays.asList("custom-actionModels.xml", "custom-actions.xml", "custom.xml", "mvc.xml"));
+
     public static PathResult getPathResult(Module module, ListModel<VirtualFile> selectedFiles, String pathPrefix, CompileContext compileContext) {
         Project project = module.getProject();
         // 源码目录
@@ -69,7 +71,25 @@ public class PatcherUtil {
                                 pathResult.put(from, to);
                             }
                         }
+                    } else if ("xml".equalsIgnoreCase(fileType)){ // 针对mybatis映射文件mapper文件做处理，将其也导出到codebase中
+                        String className = elementName.replace(".xml", "");
+
+                        String packageDir = outName.substring(0, outName.lastIndexOf("/") + 1);
+                        String xmlLocation = compilerOutputUrl + packageDir;
+
+                        Path classPath = Paths.get(xmlLocation + className + ".class"); // 如果这个文件存在class文件，那么说明这个是mapper映射文件
+
+                        if (classPath.toFile().exists()) {
+                            Path from = Paths.get(xmlLocation + elementName);
+                            Path to = Paths.get(pathPrefix + "codebase" + outName);
+                            pathResult.put(from, to);
+                        }
                     }
+                }
+
+                if (filterCompileFiles.contains(elementName)) {
+                    pathResult.addUnsettled(elementName);
+                    continue;
                 }
             }
 
