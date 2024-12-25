@@ -1,38 +1,115 @@
 plugins {
-    id 'java'
-    id 'org.jetbrains.intellij' version '0.6.5'
+    id("org.jetbrains.intellij") version "1.16.0"
 }
 
 group 'com.fun90'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 17
+targetCompatibility = 17
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 repositories {
-//    mavenCentral()
-    maven {
-        url 'http://maven.aliyun.com/nexus/content/repositories/google'
-    }
-    maven {
-        url 'http://maven.aliyun.com/nexus/content/groups/public/'
-    }
-    maven {
-        url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
-    }
+    mavenCentral()
+//    maven {
+//        url 'https://maven.aliyun.com/nexus/content/repositories/google'
+//    }
+//    maven {
+//        url 'https://maven.aliyun.com/nexus/content/groups/public/'
+//    }
+//    maven {
+//        url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'
+//    }
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+//    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2020.1'
-    plugins = ['java']
-    intellij.updateSinceUntilBuild = false
+    version.set("2023.2.5")
+    type.set("IU")
+
+    plugins = ['com.intellij.java']
 }
 
+patchPluginXml {
+    sinceBuild.set("222")
+    untilBuild.set("223.*")
+    untilBuild.set("233.*")
+}
 
+////修改 涉及到版本适配问题，前文有提到
+//plugins {
+//    id("java")
+//    id("org.jetbrains.intellij") version "1.16.0"
+//}
+//
+//group = 'com.fun90'
+//version = "2.0-SNAPSHOT"
+////修改
+//repositories {
+//    mavenCentral()
+//    //新加 maven仓库改成阿里云的
+//    maven {
+//        url 'http://maven.aliyun.com/nexus/content/repositories/google'
+//    }
+//    maven {
+//        url 'http://maven.aliyun.com/nexus/content/groups/public/'
+//    }
+//    maven {
+//        url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
+//    }
+//}
+////新加 将依赖打进jar包中（不打进去，插件如果有用到依赖，就会无法使用，找不到类）
+////tasks.jar.configure {
+////    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+////    from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar")}.map { zipTree(it) })
+////}
+//// Configure Gradle IntelliJ Plugin
+//// Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
+//intellij {
+//    //修改称自己的idea版本，查看idea版本号：help->about
+//    version.set("2023.3")
+//    type.set("IC") // Target IDE Platform
+//
+////    plugins.set(listOf(/* Plugin Dependencies */))
+//}
+//
+//sourceCompatibility = 20
+//
+//tasks {
+//    // Set the JVM compatibility versions
+////    withType<JavaCompile> {
+////        sourceCompatibility = "20"
+////        targetCompatibility = "20"
+////    }
+//
+//    patchPluginXml {
+//        sinceBuild.set("222")
+//        untilBuild.set("223.*")
+//    }
+//
+//    signPlugin {
+//        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
+//        privateKey.set(System.getenv("PRIVATE_KEY"))
+//        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+//    }
+//
+//    publishPlugin {
+//
+//        token.set(System.getenv("PUBLISH_TOKEN"))
+//    }
+//}
+//
+//tasks.withType(JavaCompile) {
+//    options.encoding = 'UTF-8'
+//}
+//
+////新加
+//dependencies {
+//    implementation("org.springframework.boot:spring-boot-starter:2.7.0")
+//}

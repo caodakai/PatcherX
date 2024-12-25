@@ -6,6 +6,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
 
+import javax.swing.*;
+
 public class ExportPatcherAction extends AnAction {
 
     @Override
@@ -19,7 +21,7 @@ public class ExportPatcherAction extends AnAction {
         PatcherDialog dialog = new PatcherDialog(event);
         dialog.setSize(600, 400);
         dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
+        SwingUtilities.invokeLater(() -> dialog.setVisible(true));
         dialog.requestFocus();
     }
 }
